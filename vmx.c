@@ -67,6 +67,46 @@ static int cmpe283_external_interrupt = 0;
 static int cmpe283_triple_fault = 0;
 static int cmpe283_nmi_window = 0;
 static int cmpe283_io_instruction = 0;
+static int cmpe283_cr_access = 0;
+static int cmpe283_dr_access = 0;
+static int cmpe283_cpuid = 0;
+static int cmpe283_msr_read = 0;
+static int cmpe283_msr_write = 0;
+static int cmpe283_pending_interrupt = 0;
+static int cmpe283_hlt = 0;
+static int cmpe283_invd = 0;
+static int cmpe283_invlpg = 0;
+static int cmpe283_rdpmc = 0;
+static int cmpe283_vmcall = 0;
+static int cmpe283_vmclear = 0;
+static int cmpe283_vmlaunch = 0;
+static int cmpe283_vmptrld = 0;
+static int cmpe283_vmptrst = 0;
+static int cmpe283_vmread = 0;
+static int cmpe283_vmresume = 0;
+static int cmpe283_vmwrite = 0;
+static int cmpe283_vmoff = 0;
+static int cmpe283_vmon = 0;
+static int cmpe283_tpr_below_threshold = 0;
+static int cmpe283_apic_access = 0;
+static int cmpe283_apic_write = 0;
+static int cmpe283_eoi_induced = 0;
+static int cmpe283_wbinvd = 0;
+static int cmpe283_xsetbv = 0;
+static int cmpe283_task_switch = 0;
+static int cmpe283_mce_during_vmentry = 0;
+static int cmpe283_ept_violation = 0;
+static int cmpe283_ept_misconfig = 0;
+static int cmpe283_pause_instruction = 0;
+static int cmpe283_mwait_instruction = 0;
+static int cmpe283_monitor_trap_flag = 0;
+static int cmpe283_monitor_instruction = 0;
+static int cmpe283_invept = 0;
+static int cmpe283_invvpid = 0;
+static int cmpe283_xsaves = 0;
+static int cmpe283_xrstors = 0;
+static int cmpe283_pml_full = 0;
+static int cmpe283_pcommit = 0;
 //End - KVMHack - Counter variables initialization
 
 
@@ -5321,6 +5361,9 @@ static void kvm_machine_check(void)
 
 static int handle_machine_check(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_mce_during_vmentry
+	cmpe283_mce_during_vmentry++;
+	//End - KVMHack - increase counter cmpe283_mce_during_vmentry
 	/* already handled by vcpu_run */
 	return 1;
 }
@@ -5453,12 +5496,18 @@ static int handle_external_interrupt(struct kvm_vcpu *vcpu)
 
 static int handle_triple_fault(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_triple_fault
+	cmpe283_triple_fault++;
+	//End - KVMHack - increase counter cmpe283_triple_fault
 	vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
 	return 0;
 }
 
 static int handle_io(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_io_instruction
+	cmpe283_io_instruction++;
+	//End - KVMHack - increase counter cmpe283_io_instruction
 	unsigned long exit_qualification;
 	int size, in, string;
 	unsigned port;
@@ -5570,6 +5619,9 @@ static void handle_clts(struct kvm_vcpu *vcpu)
 
 static int handle_cr(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_cr_access
+	cmpe283_cr_access++;
+	//End - KVMHack - increase counter cmpe283_cr_access
 	unsigned long exit_qualification, val;
 	int cr;
 	int reg;
@@ -5649,6 +5701,10 @@ static int handle_cr(struct kvm_vcpu *vcpu)
 
 static int handle_dr(struct kvm_vcpu *vcpu)
 {
+
+	//Start - KVMHack - increase counter cmpe283_dr_access
+	cmpe283_dr_access++;
+	//End - KVMHack - increase counter cmpe283_dr_access
 	unsigned long exit_qualification;
 	int dr, dr7, reg;
 
@@ -5741,12 +5797,18 @@ static void vmx_set_dr7(struct kvm_vcpu *vcpu, unsigned long val)
 
 static int handle_cpuid(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_cpuid
+	cmpe283_cpuid++;
+	//End - KVMHack - increase counter cmpe283_cpuid
 	kvm_emulate_cpuid(vcpu);
 	return 1;
 }
 
 static int handle_rdmsr(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_msr_read
+	cmpe283_msr_read++;
+	//End - KVMHack - increase counter cmpe283_msr_read
 	u32 ecx = vcpu->arch.regs[VCPU_REGS_RCX];
 	struct msr_data msr_info;
 
@@ -5769,6 +5831,9 @@ static int handle_rdmsr(struct kvm_vcpu *vcpu)
 
 static int handle_wrmsr(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_msr_write
+	cmpe283_msr_write++;
+	//End - KVMHack - increase counter cmpe283_msr_write
 	struct msr_data msr;
 	u32 ecx = vcpu->arch.regs[VCPU_REGS_RCX];
 	u64 data = (vcpu->arch.regs[VCPU_REGS_RAX] & -1u)
@@ -5790,12 +5855,18 @@ static int handle_wrmsr(struct kvm_vcpu *vcpu)
 
 static int handle_tpr_below_threshold(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_tpr_below_threshold
+	cmpe283_tpr_below_threshold++;
+	//End - KVMHack - increase counter cmpe283_tpr_below_threshold
 	kvm_make_request(KVM_REQ_EVENT, vcpu);
 	return 1;
 }
 
 static int handle_interrupt_window(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_pending_interrupt
+	cmpe283_pending_interrupt++;
+	//End - KVMHack - increase counter cmpe283_pending_interrupt
 	u32 cpu_based_vm_exec_control;
 
 	/* clear pending irq */
@@ -5811,21 +5882,33 @@ static int handle_interrupt_window(struct kvm_vcpu *vcpu)
 
 static int handle_halt(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_hlt
+	cmpe283_hlt++;
+	//End - KVMHack - increase counter cmpe283_hlt
 	return kvm_emulate_halt(vcpu);
 }
 
 static int handle_vmcall(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmcall
+	cmpe283_vmcall++;
+	//End - KVMHack - increase counter cmpe283_vmcall
 	return kvm_emulate_hypercall(vcpu);
 }
 
 static int handle_invd(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_invd
+	cmpe283_invd++;
+	//End - KVMHack - increase counter cmpe283_invd
 	return emulate_instruction(vcpu, 0) == EMULATE_DONE;
 }
 
 static int handle_invlpg(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_invlpg
+	cmpe283_invlpg++;
+	//End - KVMHack - increase counter cmpe283_invlpg
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
 
 	kvm_mmu_invlpg(vcpu, exit_qualification);
@@ -5835,6 +5918,9 @@ static int handle_invlpg(struct kvm_vcpu *vcpu)
 
 static int handle_rdpmc(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_rdpmc
+	cmpe283_rdpmc++;
+	//End - KVMHack - increase counter cmpe283_rdpmc
 	int err;
 
 	err = kvm_rdpmc(vcpu);
@@ -5845,12 +5931,18 @@ static int handle_rdpmc(struct kvm_vcpu *vcpu)
 
 static int handle_wbinvd(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_wbinvd
+	cmpe283_wbinvd++;
+	//End - KVMHack - increase counter cmpe283_wbinvd
 	kvm_emulate_wbinvd(vcpu);
 	return 1;
 }
 
 static int handle_xsetbv(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_xsetbv
+	cmpe283_xsetbv++;
+	//End - KVMHack - increase counter cmpe283_xsetbv
 	u64 new_bv = kvm_read_edx_eax(vcpu);
 	u32 index = kvm_register_read(vcpu, VCPU_REGS_RCX);
 
@@ -5861,6 +5953,9 @@ static int handle_xsetbv(struct kvm_vcpu *vcpu)
 
 static int handle_xsaves(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_xsaves
+	cmpe283_xsaves++;
+	//End - KVMHack - increase counter cmpe283_xsaves
 	skip_emulated_instruction(vcpu);
 	WARN(1, "this should never happen\n");
 	return 1;
@@ -5868,6 +5963,9 @@ static int handle_xsaves(struct kvm_vcpu *vcpu)
 
 static int handle_xrstors(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_xrstors
+	cmpe283_xrstors++;
+	//End - KVMHack - increase counter cmpe283_xrstors
 	skip_emulated_instruction(vcpu);
 	WARN(1, "this should never happen\n");
 	return 1;
@@ -5875,6 +5973,9 @@ static int handle_xrstors(struct kvm_vcpu *vcpu)
 
 static int handle_apic_access(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_apic_access
+	cmpe283_apic_access++;
+	//End - KVMHack - increase counter cmpe283_apic_access
 	if (likely(fasteoi)) {
 		unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
 		int access_type, offset;
@@ -5898,6 +5999,9 @@ static int handle_apic_access(struct kvm_vcpu *vcpu)
 
 static int handle_apic_eoi_induced(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_eoi_induced
+	cmpe283_eoi_induced++;
+	//End - KVMHack - increase counter cmpe283_eoi_induced
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
 	int vector = exit_qualification & 0xff;
 
@@ -5908,6 +6012,9 @@ static int handle_apic_eoi_induced(struct kvm_vcpu *vcpu)
 
 static int handle_apic_write(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_apic_write
+	cmpe283_apic_write++;
+	//End - KVMHack - increase counter cmpe283_apic_write
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
 	u32 offset = exit_qualification & 0xfff;
 
@@ -5918,6 +6025,9 @@ static int handle_apic_write(struct kvm_vcpu *vcpu)
 
 static int handle_task_switch(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_task_switch
+	cmpe283_task_switch++;
+	//End - KVMHack - increase counter cmpe283_task_switch
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	unsigned long exit_qualification;
 	bool has_error_code = false;
@@ -5983,6 +6093,9 @@ static int handle_task_switch(struct kvm_vcpu *vcpu)
 
 static int handle_ept_violation(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_ept_violation
+	cmpe283_ept_violation++;
+	//End - KVMHack - increase counter cmpe283_ept_violation
 	unsigned long exit_qualification;
 	gpa_t gpa;
 	u32 error_code;
@@ -6031,6 +6144,9 @@ static int handle_ept_violation(struct kvm_vcpu *vcpu)
 
 static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_ept_misconfig
+	cmpe283_ept_misconfig++;
+	//End - KVMHack - increase counter cmpe283_ept_misconfig
 	int ret;
 	gpa_t gpa;
 
@@ -6063,6 +6179,9 @@ static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
 
 static int handle_nmi_window(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_nmi_window
+	cmpe283_nmi_window++;
+	//End - KVMHack - increase counter cmpe283_nmi_window
 	u32 cpu_based_vm_exec_control;
 
 	/* clear pending NMI */
@@ -6446,6 +6565,9 @@ static __exit void hardware_unsetup(void)
  */
 static int handle_pause(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_pause_instruction
+	cmpe283_pause_instruction++;
+	//End - KVMHack - increase counter cmpe283_pause_instruction
 	if (ple_gap)
 		grow_ple_window(vcpu);
 
@@ -6463,17 +6585,26 @@ static int handle_nop(struct kvm_vcpu *vcpu)
 
 static int handle_mwait(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_mwait_instruction
+	cmpe283_mwait_instruction++;
+	//End - KVMHack - increase counter cmpe283_mwait_instruction
 	printk_once(KERN_WARNING "kvm: MWAIT instruction emulated as NOP!\n");
 	return handle_nop(vcpu);
 }
 
 static int handle_monitor_trap(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_monitor_trap_flag
+	cmpe283_monitor_trap_flag++;
+	//End - KVMHack - increase counter cmpe283_monitor_trap_flag
 	return 1;
 }
 
 static int handle_monitor(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_monitor_instruction
+	cmpe283_monitor_instruction++;
+	//End - KVMHack - increase counter cmpe283_monitor_instruction
 	printk_once(KERN_WARNING "kvm: MONITOR instruction emulated as NOP!\n");
 	return handle_nop(vcpu);
 }
@@ -6829,6 +6960,9 @@ static int nested_vmx_check_vmptr(struct kvm_vcpu *vcpu, int exit_reason,
  */
 static int handle_vmon(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmon
+	cmpe283_vmon++;
+	//End - KVMHack - increase counter cmpe283_vmon
 	struct kvm_segment cs;
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	struct vmcs *shadow_vmcs;
@@ -6989,6 +7123,9 @@ static void free_nested(struct vcpu_vmx *vmx)
 /* Emulate the VMXOFF instruction */
 static int handle_vmoff(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmoff
+	cmpe283_vmoff++;
+	//End - KVMHack - increase counter cmpe283_vmoff
 	if (!nested_vmx_check_permission(vcpu))
 		return 1;
 	free_nested(to_vmx(vcpu));
@@ -7000,6 +7137,9 @@ static int handle_vmoff(struct kvm_vcpu *vcpu)
 /* Emulate the VMCLEAR instruction */
 static int handle_vmclear(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmclear
+	cmpe283_vmclear++;
+	//End - KVMHack - increase counter cmpe283_vmclear
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	gpa_t vmptr;
 	struct vmcs12 *vmcs12;
@@ -7043,13 +7183,18 @@ static int nested_vmx_run(struct kvm_vcpu *vcpu, bool launch);
 /* Emulate the VMLAUNCH instruction */
 static int handle_vmlaunch(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmlaunch
+	cmpe283_vmlaunch++;
+	//End - KVMHack - increase counter cmpe283_vmlaunch
 	return nested_vmx_run(vcpu, true);
 }
 
 /* Emulate the VMRESUME instruction */
 static int handle_vmresume(struct kvm_vcpu *vcpu)
 {
-
+	//Start - KVMHack - increase counter cmpe283_vmresume
+	cmpe283_vmresume++;
+	//End - KVMHack - increase counter cmpe283_vmresume
 	return nested_vmx_run(vcpu, false);
 }
 
@@ -7241,6 +7386,9 @@ static int nested_vmx_check_vmcs12(struct kvm_vcpu *vcpu)
 
 static int handle_vmread(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmread
+	cmpe283_vmread++;
+	//End - KVMHack - increase counter cmpe283_vmread
 	unsigned long field;
 	u64 field_value;
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
@@ -7284,6 +7432,9 @@ static int handle_vmread(struct kvm_vcpu *vcpu)
 
 static int handle_vmwrite(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmwrite
+	cmpe283_vmwrite++;
+	//End - KVMHack - increase counter cmpe283_vmwrite
 	unsigned long field;
 	gva_t gva;
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
@@ -7338,6 +7489,9 @@ static int handle_vmwrite(struct kvm_vcpu *vcpu)
 /* Emulate the VMPTRLD instruction */
 static int handle_vmptrld(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmptrld
+	cmpe283_vmptrld++;
+	//End - KVMHack - increase counter cmpe283_vmptrld
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	gpa_t vmptr;
 
@@ -7387,6 +7541,9 @@ static int handle_vmptrld(struct kvm_vcpu *vcpu)
 /* Emulate the VMPTRST instruction */
 static int handle_vmptrst(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_vmptrst
+	cmpe283_vmptrst++;
+	//End - KVMHack - increase counter cmpe283_vmptrst
 	unsigned long exit_qualification = vmcs_readl(EXIT_QUALIFICATION);
 	u32 vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
 	gva_t vmcs_gva;
@@ -7413,6 +7570,9 @@ static int handle_vmptrst(struct kvm_vcpu *vcpu)
 /* Emulate the INVEPT instruction */
 static int handle_invept(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_invept
+	cmpe283_invept++;
+	//End - KVMHack - increase counter cmpe283_invept
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 vmx_instruction_info, types;
 	unsigned long type;
@@ -7479,6 +7639,9 @@ static int handle_invept(struct kvm_vcpu *vcpu)
 
 static int handle_invvpid(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_invvpid
+	cmpe283_invvpid++;
+	//End - KVMHack - increase counter cmpe283_invvpid
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 vmx_instruction_info;
 	unsigned long type, types;
@@ -7542,6 +7705,9 @@ static int handle_invvpid(struct kvm_vcpu *vcpu)
 
 static int handle_pml_full(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_pml_full
+	cmpe283_pml_full++;
+	//End - KVMHack - increase counter cmpe283_pml_full
 	unsigned long exit_qualification;
 
 	trace_kvm_pml_full(vcpu->vcpu_id);
@@ -7567,6 +7733,9 @@ static int handle_pml_full(struct kvm_vcpu *vcpu)
 
 static int handle_pcommit(struct kvm_vcpu *vcpu)
 {
+	//Start - KVMHack - increase counter cmpe283_pcommit
+	cmpe283_pcommit++;
+	//End - KVMHack - increase counter cmpe283_pcommit
 	/* we never catch pcommit instruct for L1 guest. */
 	WARN_ON(1);
 	return 1;
@@ -11063,6 +11232,49 @@ static void __exit vmx_exit(void)
 //Start - KVMHack - Make variables global
 EXPORT_SYMBOL(cmpe283_exception_nmi);
 EXPORT_SYMBOL(cmpe283_external_interrupt);
+EXPORT_SYMBOL(cmpe283_triple_fault);
+EXPORT_SYMBOL(cmpe283_nmi_window);
+EXPORT_SYMBOL(cmpe283_io_instruction);
+EXPORT_SYMBOL(cmpe283_cr_access);
+EXPORT_SYMBOL(cmpe283_dr_access);
+EXPORT_SYMBOL(cmpe283_cpuid);
+EXPORT_SYMBOL(cmpe283_msr_read);
+EXPORT_SYMBOL(cmpe283_msr_write);
+EXPORT_SYMBOL(cmpe283_pending_interrupt);
+EXPORT_SYMBOL(cmpe283_hlt);
+EXPORT_SYMBOL(cmpe283_invd);
+EXPORT_SYMBOL(cmpe283_invlpg);
+EXPORT_SYMBOL(cmpe283_rdpmc);
+EXPORT_SYMBOL(cmpe283_vmcall);
+EXPORT_SYMBOL(cmpe283_vmclear);
+EXPORT_SYMBOL(cmpe283_vmlaunch);
+EXPORT_SYMBOL(cmpe283_vmptrld);
+EXPORT_SYMBOL(cmpe283_vmptrst);
+EXPORT_SYMBOL(cmpe283_vmread);
+EXPORT_SYMBOL(cmpe283_vmresume);
+EXPORT_SYMBOL(cmpe283_vmwrite);
+EXPORT_SYMBOL(cmpe283_vmoff);
+EXPORT_SYMBOL(cmpe283_vmon);
+EXPORT_SYMBOL(cmpe283_tpr_below_threshold);
+EXPORT_SYMBOL(cmpe283_apic_access);
+EXPORT_SYMBOL(cmpe283_apic_write);
+EXPORT_SYMBOL(cmpe283_eoi_induced);
+EXPORT_SYMBOL(cmpe283_wbinvd);
+EXPORT_SYMBOL(cmpe283_xsetbv);
+EXPORT_SYMBOL(cmpe283_task_switch);
+EXPORT_SYMBOL(cmpe283_mce_during_vmentry);
+EXPORT_SYMBOL(cmpe283_ept_violation);
+EXPORT_SYMBOL(cmpe283_ept_misconfig);
+EXPORT_SYMBOL(cmpe283_pause_instruction);
+EXPORT_SYMBOL(cmpe283_mwait_instruction);
+EXPORT_SYMBOL(cmpe283_monitor_trap_flag);
+EXPORT_SYMBOL(cmpe283_monitor_instruction);
+EXPORT_SYMBOL(cmpe283_invept);
+EXPORT_SYMBOL(cmpe283_invvpid);
+EXPORT_SYMBOL(cmpe283_xsaves);
+EXPORT_SYMBOL(cmpe283_xrstors);
+EXPORT_SYMBOL(cmpe283_pml_full);
+EXPORT_SYMBOL(cmpe283_pcommit);
 //End - KVMHack - Make variables global
 
 module_init(vmx_init)
